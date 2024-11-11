@@ -58,6 +58,10 @@ if __name__ == "__main__":
     learning_rate = config['training']['learning_rate']
     batch_size = config['training']['batch_size']
     catalog_path = config['data']['catalog_path']
+    experiments_path = config['experiments']['experiments_path']
+
+    if not os.path.exists(experiments_path):
+        os.makedirs(experiments_path)
 
     # Create DataLoaders and get input/output sizes
     data_loader = Custom_DataLoader(catalog_path=catalog_path, random_state=RANDOM_STATE, test_size=0.2, val_size=0.1)
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     train_loader, val_loader, test_loader, input_size, output_size, x_test_tensor, y_test_tensor = data_loader.load_saunders2021(bool_create_dataloaders=True)
     
     # Initialize the model
-    ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE)
+    ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
 
     # train the model
     train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=True, save_best=True)

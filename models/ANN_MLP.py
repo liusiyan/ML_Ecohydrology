@@ -10,7 +10,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 class ANN_MLP:
-    def __init__(self, input_size, output_size, hidden_layers, learning_rate, random_state=20):
+    def __init__(self, input_size, output_size, hidden_layers, learning_rate, random_state=20, **kwargs):
         """
         Initialize the ANN_MLP model.
         
@@ -28,6 +28,12 @@ class ANN_MLP:
         self.set_seed(random_state)
         
         self.model, self.criterion, self.optimizer = self._initialize_model()
+
+        if "experiments_path" in kwargs:
+            self.experiments_path = kwargs["experiments_path"]
+        else: # default path
+            self.experiments_path = os.path.join(os.getcwd(), 'experiments')
+            print('--- No experiments path provided, using default path:', self.experiments_path)
         
     @staticmethod
     def set_seed(seed):
@@ -104,7 +110,10 @@ class ANN_MLP:
             self.model.load_state_dict(best_model)
 
         if save_best:
-            torch.save(self.model.state_dict(), 'best_model.pth')
+            ## make the complete path plus model name
+            save_model_path = os.path.join(self.experiments_path, 'best_model.pth')
+            torch.save(self.model.state_dict(), save_model_path)
+            print('--- Saved best model to:', save_model_path)
         
         return train_losses, val_losses
 
