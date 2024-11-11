@@ -1,0 +1,12 @@
+
+data:
+  catalog_path: "experiments/NN_saunders2021/leaf-level.yaml"
+model:
+  layers:
+    - hidden_size: 64
+    - hidden_size: 32
+    - hidden_size: 32
+training:
+  num_epochs: 1000
+  learning_rate: 0.001
+  batch_size: 512
