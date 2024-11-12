@@ -3,6 +3,9 @@ data:
   catalog_path: "experiments/NN_saunders2021/leaf-level.yaml"
 experiments:
   experiments_path: "experiments/NN_saunders2021"
+  save_best_model: True
+  save_losses: True
+  plot_losses: True
 model:
   layers:
     - hidden_size: 64

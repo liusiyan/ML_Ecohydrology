@@ -59,6 +59,9 @@ if __name__ == "__main__":
     batch_size = config['training']['batch_size']
     catalog_path = config['data']['catalog_path']
     experiments_path = config['experiments']['experiments_path']
+    bool_save_best_model = config['experiments']['save_best_model']
+    bool_save_losses = config['experiments']['save_losses']
+    bool_plot_losses = config['experiments']['plot_losses']
 
     if not os.path.exists(experiments_path):
         os.makedirs(experiments_path)
@@ -73,23 +76,25 @@ if __name__ == "__main__":
     ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
 
     # train the model
-    train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=True, save_best=True)
-
+    train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=True, save_best_model=bool_save_best_model, save_losses=bool_save_losses, plot_losses=bool_plot_losses)
+    if bool_save_losses: ### train_losses and val_losses are lists
+        np.save(os.path.join(experiments_path, 'train_losses.npy'), train_losses)
+        np.save(os.path.join(experiments_path, 'val_losses.npy'), val_losses)
     # evaluate the model
     rmse, r2 = ANN_MLP_model.evaluate(test_loader)
 
     print(f'--- Test RMSE: {rmse:.4f}')
     print(f'--- Test R²: {r2:.4f}')
 
-    # Plot the training and validation losses together
-    import matplotlib.pyplot as plt
-    plt.plot(train_losses, label='Training loss')
-    plt.plot(val_losses, label='Validation loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training and Validation Losses')
-    plt.legend()
-    plt.grid()
-    plt.savefig('training_validation_losses.png')
+    # # Plot the training and validation losses together
+    # import matplotlib.pyplot as plt
+    # plt.plot(train_losses, label='Training loss')
+    # plt.plot(val_losses, label='Validation loss')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Loss')
+    # plt.title('Training and Validation Losses')
+    # plt.legend()
+    # plt.grid()
+    # plt.savefig('training_validation_losses.png')
 
 

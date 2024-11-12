@@ -63,7 +63,7 @@ class ANN_MLP:
         optimizer = optim.Adam(model.parameters(), lr=self.learning_rate)
         return model, criterion, optimizer
 
-    def train(self, train_loader, val_loader, num_epochs, patience=5, min_delta=1e-4, verbose=True, save_best=False):
+    def train(self, train_loader, val_loader, num_epochs, patience=5, min_delta=1e-4, verbose=True, save_best_model=False, save_losses=False, plot_losses=False):
         """Train the model with early stopping"""
         best_val_loss = float('inf')
         counter = 0
@@ -109,12 +109,30 @@ class ANN_MLP:
         if best_model is not None:
             self.model.load_state_dict(best_model)
 
-        if save_best:
+        if save_best_model:
             ## make the complete path plus model name
             save_model_path = os.path.join(self.experiments_path, 'best_model.pth')
             torch.save(self.model.state_dict(), save_model_path)
             print('--- Saved best model to:', save_model_path)
         
+        if save_losses: 
+            np.save(os.path.join(self.experiments_path, 'train_losses.npy'), train_losses)
+            np.save(os.path.join(self.experiments_path, 'val_losses.npy'), val_losses)
+            print('--- Saved train and validation losses to:', self.experiments_path)
+        
+        if plot_losses:
+            import matplotlib.pyplot as plt
+            plt.plot(train_losses, label='Training loss')
+            plt.plot(val_losses, label='Validation loss')
+            plt.xlabel('Epoch')
+            plt.ylabel('Loss')
+            plt.title('Training and Validation Losses')
+            plt.legend()
+            plt.grid()
+            plt.savefig(os.path.join(self.experiments_path, 'losses_plot.png'))
+            plt.close()
+            print('--- Saved training and validation losses plot to:', self.experiments_path)
+
         return train_losses, val_losses
 
     def validate(self, val_loader):
