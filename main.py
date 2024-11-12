@@ -85,16 +85,3 @@ if __name__ == "__main__":
 
     print(f'--- Test RMSE: {rmse:.4f}')
     print(f'--- Test R²: {r2:.4f}')
-
-    # # Plot the training and validation losses together
-    # import matplotlib.pyplot as plt
-    # plt.plot(train_losses, label='Training loss')
-    # plt.plot(val_losses, label='Validation loss')
-    # plt.xlabel('Epoch')
-    # plt.ylabel('Loss')
-    # plt.title('Training and Validation Losses')
-    # plt.legend()
-    # plt.grid()
-    # plt.savefig('training_validation_losses.png')
-
-
