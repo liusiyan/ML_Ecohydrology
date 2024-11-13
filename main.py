@@ -94,12 +94,8 @@ if __name__ == "__main__":
 
     # (2)Initialize ANN_MLP model
     ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
-
     # train ANN_MLP model
     train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=False, save_best_model=bool_save_best_model, save_losses=bool_save_losses, plot_losses=bool_plot_losses)
-    if bool_save_losses: ### train_losses and val_losses are lists
-        np.save(os.path.join(experiments_path, 'train_losses.npy'), train_losses)
-        np.save(os.path.join(experiments_path, 'val_losses.npy'), val_losses)
     # evaluate the model
     rmse, r2 = ANN_MLP_model.evaluate(test_loader)
     print(f'--- Test ANN RMSE: {rmse:.4f}')
