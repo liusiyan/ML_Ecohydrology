@@ -24,6 +24,7 @@ import argparse
 from utils.utils import DataProcessor
 from dataloaders.dataloaders import Custom_DataLoader
 from models.ANN_MLP import ANN_MLP
+from models.RF_model import RF_Model
 
 def load_config(config_file):
     with open(config_file, 'r') as file:
@@ -72,16 +73,34 @@ if __name__ == "__main__":
     # Load data and preprocess
     train_loader, val_loader, test_loader, input_size, output_size, x_test_tensor, y_test_tensor = data_loader.load_saunders2021(bool_create_dataloaders=True)
     
-    # Initialize the model
+    # (1) Initialize Randon Forest (RF) model
+    rf_model = RF_Model(
+        n_estimators=100,
+        max_depth=None,
+        random_state=RANDOM_STATE,
+        experiments_path=experiments_path
+    )
+    # train RF model
+    train_losses, val_losses = rf_model.train(
+        train_loader,
+        val_loader,
+        save_best_model=bool_save_best_model,
+        save_losses=False,
+        plot_losses=False
+    )
+    rmse, r2 = rf_model.evaluate(test_loader)
+    print(f'--- Test RF RMSE: {rmse:.4f}')
+    print(f'--- Test RF R²: {r2:.4f}')
+
+    # (2)Initialize ANN_MLP model
     ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
 
-    # train the model
-    train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=True, save_best_model=bool_save_best_model, save_losses=bool_save_losses, plot_losses=bool_plot_losses)
+    # train ANN_MLP model
+    train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=False, save_best_model=bool_save_best_model, save_losses=bool_save_losses, plot_losses=bool_plot_losses)
     if bool_save_losses: ### train_losses and val_losses are lists
         np.save(os.path.join(experiments_path, 'train_losses.npy'), train_losses)
         np.save(os.path.join(experiments_path, 'val_losses.npy'), val_losses)
     # evaluate the model
     rmse, r2 = ANN_MLP_model.evaluate(test_loader)
-
-    print(f'--- Test RMSE: {rmse:.4f}')
-    print(f'--- Test R²: {r2:.4f}')
+    print(f'--- Test ANN RMSE: {rmse:.4f}')
+    print(f'--- Test ANN R²: {r2:.4f}')

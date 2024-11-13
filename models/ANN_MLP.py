@@ -5,6 +5,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from torch.utils.data import DataLoader, TensorDataset
 import random
 import os
+from tqdm import tqdm
 
 import torch.nn as nn
 import torch.optim as optim
@@ -71,6 +72,7 @@ class ANN_MLP:
         train_losses = []
         val_losses = []
 
+        print('--- Start training ANN_MLP model...')
         for epoch in range(num_epochs):
             # Training phase
             self.model.train()
@@ -111,13 +113,13 @@ class ANN_MLP:
 
         if save_best_model:
             ## make the complete path plus model name
-            save_model_path = os.path.join(self.experiments_path, 'best_model.pth')
+            save_model_path = os.path.join(self.experiments_path, 'best_model_ANN.pth')
             torch.save(self.model.state_dict(), save_model_path)
             print('--- Saved best model to:', save_model_path)
         
         if save_losses: 
-            np.save(os.path.join(self.experiments_path, 'train_losses.npy'), train_losses)
-            np.save(os.path.join(self.experiments_path, 'val_losses.npy'), val_losses)
+            np.save(os.path.join(self.experiments_path, 'train_losses_ANN.npy'), train_losses)
+            np.save(os.path.join(self.experiments_path, 'val_losses_ANN.npy'), val_losses)
             print('--- Saved train and validation losses to:', self.experiments_path)
         
         if plot_losses:
@@ -126,10 +128,10 @@ class ANN_MLP:
             plt.plot(val_losses, label='Validation loss')
             plt.xlabel('Epoch')
             plt.ylabel('Loss')
-            plt.title('Training and Validation Losses')
+            plt.title('Training and Validation Losses (ANN_MLP)')
             plt.legend()
             plt.grid()
-            plt.savefig(os.path.join(self.experiments_path, 'losses_plot.png'))
+            plt.savefig(os.path.join(self.experiments_path, 'losses_plot_ANN_MLP.png'))
             plt.close()
             print('--- Saved training and validation losses plot to:', self.experiments_path)
 
