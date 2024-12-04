@@ -86,7 +86,7 @@ class RF_Model:
         return train_losses, val_losses
     
 
-    def evaluate(self, test_loader) -> Tuple[float, float]:
+    def evaluate(self, test_loader, save_predictions=False, plot_predictions=False) -> Tuple[float, float]:
         """
         Evaluate model on test data.
         
@@ -107,8 +107,24 @@ class RF_Model:
         y_pred = self.model.predict(X_test)
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         r2 = r2_score(y_test, y_pred)
-        
-        return rmse, r2
+
+        if save_predictions:
+            np.save(os.path.join(self.experiments_path, 'test_labels_RF.npy'), y_test)
+            np.save(os.path.join(self.experiments_path, 'test_predictions_RF.npy'), y_pred)
+            print('--- Saved test labels and predictions to:', self.experiments_path)
+
+        if plot_predictions:
+            plt.scatter(y_test, y_pred)
+            plt.xlabel('True values')
+            plt.ylabel('Predictions')
+            plt.title('True vs Predicted values (RandomForest)')
+            plt.grid()
+            plt.plot([0, 1], [0, 1], color='red', transform=plt.gca().transAxes)
+            plt.savefig(os.path.join(self.experiments_path, 'predictions_plot_RF.png'))
+            plt.close()
+            print('--- Saved predictions plot to:', self.experiments_path)
+
+        return rmse, r2, y_test, y_pred
     
     def _calculate_loss(self, data_loader) -> float:
         """Calculate MSE loss for given data loader."""

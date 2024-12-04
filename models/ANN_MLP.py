@@ -148,7 +148,7 @@ class ANN_MLP:
                 val_loss += loss.item()
         return val_loss / len(val_loader)
 
-    def evaluate(self, test_loader):
+    def evaluate(self, test_loader, save_predictions=False, plot_predictions=False):
         """Evaluate model performance"""
         self.model.eval()
         all_labels = []
@@ -161,7 +161,25 @@ class ANN_MLP:
         
         rmse = mean_squared_error(all_labels, all_predictions, squared=False)
         r2 = r2_score(all_labels, all_predictions)
-        return rmse, r2
+
+        if save_predictions:
+            np.save(os.path.join(self.experiments_path, 'test_labels_ANN.npy'), all_labels)
+            np.save(os.path.join(self.experiments_path, 'test_predictions_ANN.npy'), all_predictions)
+            print('--- Saved test labels and predictions to:', self.experiments_path)
+        
+        if plot_predictions:
+            import matplotlib.pyplot as plt
+            plt.scatter(all_labels, all_predictions)
+            plt.xlabel('True values')
+            plt.ylabel('Predictions')
+            plt.title('True vs Predicted values (ANN_MLP)')
+            plt.grid()
+            plt.plot([0, 1], [0, 1], color='red', transform=plt.gca().transAxes)
+            plt.savefig(os.path.join(self.experiments_path, 'predictions_plot_ANN_MLP.png'))
+            plt.close()
+            print('--- Saved predictions plot to:', self.experiments_path)
+
+        return rmse, r2, all_labels, all_predictions
 
     def predict(self, inputs):
         """Make predictions on new data"""

@@ -88,15 +88,17 @@ if __name__ == "__main__":
         save_losses=False,
         plot_losses=False
     )
-    rmse, r2 = rf_model.evaluate(test_loader)
+    rmse, r2, y_test, y_pred = rf_model.evaluate(test_loader, save_predictions=True, plot_predictions=True)
     print(f'--- Test RF RMSE: {rmse:.4f}')
     print(f'--- Test RF R²: {r2:.4f}')
+
+    exit()
 
     # (2)Initialize ANN_MLP model
     ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
     # train ANN_MLP model
     train_losses, val_losses = ANN_MLP_model.train(train_loader, val_loader, num_epochs, patience=100, min_delta=1e-4, verbose=False, save_best_model=bool_save_best_model, save_losses=bool_save_losses, plot_losses=bool_plot_losses)
     # evaluate the model
-    rmse, r2 = ANN_MLP_model.evaluate(test_loader)
+    rmse, r2, all_labels, all_predictions = ANN_MLP_model.evaluate(test_loader, save_predictions=True, plot_predictions=True)
     print(f'--- Test ANN RMSE: {rmse:.4f}')
     print(f'--- Test ANN R²: {r2:.4f}')
