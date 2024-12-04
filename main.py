@@ -92,8 +92,6 @@ if __name__ == "__main__":
     print(f'--- Test RF RMSE: {rmse:.4f}')
     print(f'--- Test RF R²: {r2:.4f}')
 
-    exit()
-
     # (2)Initialize ANN_MLP model
     ANN_MLP_model = ANN_MLP(input_size, output_size, hidden_layers, learning_rate, random_state=RANDOM_STATE, experiments_path=experiments_path)
     # train ANN_MLP model
